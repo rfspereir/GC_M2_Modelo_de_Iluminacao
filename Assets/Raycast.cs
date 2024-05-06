@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,11 @@ public class Raycast : MonoBehaviour
     Ray ray;
     Texture2D tex;
     public float cameraSize;
+    public Transform light1;
+    [Range(0,30)]
+    public float specular;
+    [Range(0,1)]
+    public float ambient;
 
     
     void Start()
@@ -36,7 +42,7 @@ public class Raycast : MonoBehaviour
                 float py = ((float)y/tex.height) * cameraSize-cameraSize*.5f;
                 ray.origin = new Vector3(px, py, 0);
                 if (Physics.Raycast(ray, out RaycastHit hit)){
-                    Color c = hit.transform.GetComponent<MeshRenderer>().material.color;
+                    Color c = BlinnPhong(hit);
                     tex.SetPixel(x, y, c);
                 }else{
                     tex.SetPixel(x, y, Color.black);
@@ -46,5 +52,17 @@ public class Raycast : MonoBehaviour
         }
          yield return new WaitForSeconds(0.0001f);
        
+    }
+
+    Color BlinnPhong(RaycastHit hit){
+        Color hitColor = hit.transform.GetComponent<MeshRenderer>().material.color;
+        Vector3 L = (light1.position-hit.point).normalized;
+        Vector3 N = hit.normal;
+        Vector3 V = (transform.position-hit.point).normalized;
+        Vector3 H = (L+V).normalized;
+        float NdotH = Mathf.Max(0, Vector3.Dot(N,H));
+        float diff = Mathf.Max(0, Vector3.Dot(N,L));
+        float spec = Mathf.Pow(NdotH, (specular*2+1));
+        return ambient*hitColor + diff*hitColor + spec*Color.white;
     }
 }
