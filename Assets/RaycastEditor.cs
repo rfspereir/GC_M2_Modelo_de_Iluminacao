@@ -9,6 +9,7 @@ public class RaycastEditor : Editor
     public override void OnInspectorGUI()
     {
         Raycast raycast = (Raycast)target;
+        //raycast.ambientColor = EditorGUILayout.ColorField("Ambient Color", raycast.ambientColor);
 
         if (DrawDefaultInspector())
         {

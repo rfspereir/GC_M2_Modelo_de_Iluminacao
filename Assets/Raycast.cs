@@ -14,28 +14,23 @@ public class Raycast : MonoBehaviour
     public float specular;
     [Range(0,1)]
     public float ambient;
-    //public Button renderButton;
     public bool autoUpdate;
-    //public Toggle autoUpdateToggle;
-    public Color ambientColor;
+    public Color ambientColor=Color.white;
+    
+    
 
     
     void Start()
     {
         ray= new Ray(transform.position, Vector3.forward);
         Renderer rend = GetComponent<Renderer>();
-        tex= new Texture2D(50, 50);
+        tex= new Texture2D(100, 100);
         tex.filterMode = FilterMode.Trilinear;
         rend.material.mainTexture = tex;
-        ambientColor = EditorGUILayout.ColorField("Ambient Color", ambientColor);      
-        
     }
 
     void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.Space)){
-        //     StartCoroutine("RenderScene");
-        // }
         Debug.DrawRay(ray.origin, ray.direction* 5.0f, Color.red);
     }
     public void RenderButtonClicked()
@@ -46,20 +41,14 @@ public class Raycast : MonoBehaviour
 
     public void ClearTexture()
 {
-    Color[] clearPixels = new Color[tex.width * tex.height]; // Cria um array de cores vazio
+    Color[] clearPixels = new Color[tex.width * tex.height];
     for (int i = 0; i < clearPixels.Length; i++)
     {
-        clearPixels[i] = Color.white; // Define todas as cores como branco para limpar a textura
+        clearPixels[i] = Color.white;
     }
-    tex.SetPixels(clearPixels); // Define os pixels da textura como branco
-    tex.Apply(); // Aplica as alterações na textura
+    tex.SetPixels(clearPixels);
+    tex.Apply();
 }
-
- void ToggleAutoUpdate(bool newValue)
-    {
-        autoUpdate = newValue;
-    }
-
     public IEnumerator RenderScene(){
         for (int y = 0; y < tex.height; y++)
         {
@@ -72,12 +61,12 @@ public class Raycast : MonoBehaviour
                     Color c = BlinnPhong(hit);
                     tex.SetPixel(x, y, c);
                 }else{
-                    tex.SetPixel(x, y, Color.black);
+                    tex.SetPixel(x, y, ambientColor);
                 }
                  tex.Apply();
             }
         }
-         yield return new WaitForSeconds(0.0001f);
+         yield return null;
        
     }
 
